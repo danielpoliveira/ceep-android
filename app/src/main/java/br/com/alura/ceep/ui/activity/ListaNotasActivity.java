@@ -3,22 +3,30 @@ package br.com.alura.ceep.ui.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import java.util.List;
 
 import br.com.alura.ceep.R;
 import br.com.alura.ceep.dao.NotaDAO;
+import br.com.alura.ceep.model.Layout;
 import br.com.alura.ceep.model.Nota;
+import br.com.alura.ceep.preferences.EstadoLayoutPreferences;
 import br.com.alura.ceep.ui.recyclerview.adapter.ListaNotasAdapter;
 import br.com.alura.ceep.ui.recyclerview.adapter.listener.OnItemClickListener;
 import br.com.alura.ceep.ui.recyclerview.helper.callback.NotaItemTouchHelperCallback;
 
+import static br.com.alura.ceep.model.Layout.GRID;
+import static br.com.alura.ceep.model.Layout.LINEAR;
 import static br.com.alura.ceep.ui.activity.NotaActivityConstantes.CHAVE_NOTA;
 import static br.com.alura.ceep.ui.activity.NotaActivityConstantes.CHAVE_POSICAO;
 import static br.com.alura.ceep.ui.activity.NotaActivityConstantes.CODIGO_REQUISICAO_ALTERA_NOTA;
@@ -27,9 +35,11 @@ import static br.com.alura.ceep.ui.activity.NotaActivityConstantes.POSICAO_INVAL
 
 public class ListaNotasActivity extends AppCompatActivity {
 
-
     public static final String TITULO_APPBAR = "Notas";
+
+    private EstadoLayoutPreferences preferences;
     private ListaNotasAdapter adapter;
+    private Layout layout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +53,50 @@ public class ListaNotasActivity extends AppCompatActivity {
         configuraBotaoInsereNota();
     }
 
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_lista_notas, menu);
+        MenuItem item = menu.findItem(R.id.menu_lista_notas_layout);
+
+        carregaLayout();
+        configuraBotaoAlterarLayout(item);
+        configuraLayout(item);
+
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    private boolean verificaLayout() {
+        return layout == LINEAR;
+    }
+
+    private void carregaLayout() {
+        preferences = new EstadoLayoutPreferences(this);
+        String layoutString = preferences.getEstadoLayout();
+        layout = Layout.toLayout(layoutString);
+    }
+
+    private void configuraBotaoAlterarLayout(MenuItem item) {
+        item.setOnMenuItemClickListener(this::alteraLayout);
+    }
+
+    private boolean alteraLayout(MenuItem item) {
+        layout = verificaLayout() ? GRID : LINEAR;
+
+        configuraLayout(item);
+        preferences.saveEstadoLayout(layout);
+        return true;
+    }
+
+    private void configuraLayout(MenuItem item) {
+        if (verificaLayout()) {
+            item.setIcon(R.drawable.ic_rows);
+        } else {
+            item.setIcon(R.drawable.ic_grid);
+        }
+
+        configuraLayoutManagerRecyclerview();
+    }
+
     private void configuraBotaoInsereNota() {
         TextView botaoInsereNota = findViewById(R.id.lista_notas_insere_nota);
         botaoInsereNota.setOnClickListener(new View.OnClickListener() {
@@ -51,6 +105,14 @@ public class ListaNotasActivity extends AppCompatActivity {
                 vaiParaFormularioNotaActivityInsere();
             }
         });
+    }
+
+    private void configuraLayoutManagerRecyclerview() {
+        RecyclerView recyclerview = findViewById(R.id.lista_notas_recyclerview);
+        recyclerview.setLayoutManager(verificaLayout() ?
+                new LinearLayoutManager(this) :
+                new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+        );
     }
 
     private void vaiParaFormularioNotaActivityInsere() {
@@ -159,5 +221,6 @@ public class ListaNotasActivity extends AppCompatActivity {
         abreFormularioComNota.putExtra(CHAVE_POSICAO, posicao);
         startActivityForResult(abreFormularioComNota, CODIGO_REQUISICAO_ALTERA_NOTA);
     }
+
 
 }
