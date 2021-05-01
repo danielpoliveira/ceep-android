@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -88,9 +87,9 @@ public class ListaNotasActivity extends AppCompatActivity {
 
     private void configuraLayout(MenuItem item) {
         if (verificaLayout()) {
-            item.setIcon(R.drawable.ic_rows);
-        } else {
             item.setIcon(R.drawable.ic_grid);
+        } else {
+            item.setIcon(R.drawable.ic_rows);
         }
 
         configuraLayoutManagerRecyclerview();
@@ -98,12 +97,7 @@ public class ListaNotasActivity extends AppCompatActivity {
 
     private void configuraBotaoInsereNota() {
         TextView botaoInsereNota = findViewById(R.id.lista_notas_insere_nota);
-        botaoInsereNota.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                vaiParaFormularioNotaActivityInsere();
-            }
-        });
+        botaoInsereNota.setOnClickListener(view -> vaiParaFormularioNotaActivityInsere());
     }
 
     private void configuraLayoutManagerRecyclerview() {
