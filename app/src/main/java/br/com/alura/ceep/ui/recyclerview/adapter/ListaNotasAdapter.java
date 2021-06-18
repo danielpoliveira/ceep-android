@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -18,13 +19,12 @@ import br.com.alura.ceep.model.Nota;
 
 public class ListaNotasAdapter extends RecyclerView.Adapter<ListaNotasAdapter.NotaViewHolder> {
 
-    private final List<Nota> notas;
+    private final List<Nota> notas = new ArrayList<>();
     private final Context context;
     private OnItemClickListener onItemClickListener;
 
-    public ListaNotasAdapter(Context context, List<Nota> notas) {
+    public ListaNotasAdapter(Context context) {
         this.context = context;
-        this.notas = notas;
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
@@ -54,6 +54,20 @@ public class ListaNotasAdapter extends RecyclerView.Adapter<ListaNotasAdapter.No
         notifyDataSetChanged();
     }
 
+    public void atualiza(List<Nota> notas) {
+        notifyItemRangeRemoved(0, this.notas.size());
+        this.notas.clear();
+        this.notas.addAll(notas);
+        notifyItemRangeInserted(0, this.notas.size());
+    }
+
+    public Nota getNota(int position) {
+        if (position < 0 || position >= notas.size())
+            return null;
+
+        return notas.get(position);
+    }
+
     public void remove(int posicao) {
         notas.remove(posicao);
         notifyItemRemoved(posicao);
@@ -61,6 +75,7 @@ public class ListaNotasAdapter extends RecyclerView.Adapter<ListaNotasAdapter.No
 
     public void troca(int posicaoInicial, int posicaoFinal) {
         Collections.swap(notas, posicaoInicial, posicaoFinal);
+
         notifyItemMoved(posicaoInicial, posicaoFinal);
     }
 

@@ -14,10 +14,12 @@
         app:layout_constraintBottom_toTopOf="@id/lista_notas_insere_nota"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+
         app:layout_constraintTop_toTopOf="parent"
         tools:listitem="@layout/item_nota" />
 
-    <View android:id="@+id/lista_notas_fundo_gradiente_inferior"
+    <View
+        android:id="@+id/lista_notas_fundo_gradiente_inferior"
         android:layout_width="0dp"
         android:layout_height="5dp"
         android:background="@drawable/fundo_gradiente_insere_nota"
@@ -36,4 +38,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
